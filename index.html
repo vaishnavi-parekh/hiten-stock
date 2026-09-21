@@ -5,64 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Hiten Auto Mobile</title>
     <meta name="theme-color" content="#c2410c">
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #fff5e6; padding: 15px; }
         .container { max-width: 500px; margin: 0 auto; }
-        
+
         #authScreen { position: fixed; inset: 0; background: linear-gradient(160deg, #c2410c, #f59e0b); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
         .auth-card { background: white; border-radius: 24px; padding: 30px 25px; width: 100%; max-width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: center; }
         .auth-input { width: 100%; padding: 14px; border: 2px solid #fcd34d; border-radius: 14px; font-size: 16px; margin-bottom: 12px; }
         .auth-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; background: #c2410c; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
         .reset-link { display:block; margin-top:20px; color:#c2410c; font-size:13px; text-decoration:underline; cursor:pointer; font-weight:bold; }
- 
+
         #appScreen { display: none; }
         .header { background: #c2410c; color: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; text-align: center; position: relative; }
         .logout-btn { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; border-radius: 14px; padding: 6px 12px; font-size: 11px; cursor: pointer; }
-        
+
         .stats { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-card { background: white; flex: 1; padding: 15px; border-radius: 15px; text-align: center; border: 2px solid #fcd34d; }
         .stat-number { font-size: 24px; font-weight: bold; color: #c2410c; }
- 
-        .bill-section { background: #16a34a; padding: 20px; border-radius: 20px; margin-bottom: 20px; color: white; text-align: center; }
+
+        .bill-section { background: #16a34a; padding: 16px; border-radius: 20px; margin-bottom: 12px; color: white; text-align: center; }
         .bill-btn-row { display: flex; gap: 10px; margin-top: 10px; }
-        .bill-btn { flex: 1; background: white; border: none; border-radius: 16px; padding: 12px; font-weight: bold; cursor: pointer; color: #166534; }
-        .bill-status { margin-top: 10px; font-size: 13px; font-weight: bold; color: #fff; }
- 
+        .bill-btn { flex: 1; background: white; border: none; border-radius: 16px; padding: 12px; font-weight: bold; cursor: pointer; color: #166534; font-size: 15px; }
+        .bill-btn:disabled { opacity: 0.5; }
+        .src-row { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+        .src-btn { background: rgba(255,255,255,0.25); color: #fff; border: none; border-radius: 14px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .src-btn.active { background: #fff; color: #166534; }
+        .bill-status { margin-top: 8px; font-size: 13px; font-weight: bold; color: #fff; min-height: 4px; }
+
+        .sync-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: #555; }
+        .sync-row span { flex: 1; }
+        .sync-btn { background: white; border: 2px solid #fcd34d; border-radius: 14px; padding: 6px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
         .controls-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-box { flex: 1; padding: 12px 20px; border: 2px solid #fcd34d; border-radius: 25px; font-size: 16px; }
+        .search-box { flex: 1; padding: 12px 20px; border: 2px solid #fcd34d; border-radius: 25px; font-size: 16px; min-width: 0; }
         .add-product-btn { background: #c2410c; color: white; border: none; padding: 0 15px; border-radius: 25px; font-weight: bold; cursor: pointer; }
- 
+
         .category-tabs { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; }
         .category-tab { background: white; padding: 8px 15px; border-radius: 20px; border: 2px solid #fcd34d; cursor: pointer; white-space: nowrap; font-size: 13px; }
         .category-tab.active { background: #c2410c; color: white; border-color: #c2410c; }
-        
+
         .company-group { background: white; border-radius: 20px; padding: 15px; border: 2px solid #fcd34d; margin-bottom: 15px; }
         .company-name { font-size: 18px; font-weight: bold; color: #c2410c; border-bottom: 2px solid #fde68a; margin-bottom: 10px; padding-bottom: 5px; }
-        
+
         .product-card { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #fde68a; }
         .product-name { font-size: 25px; font-weight: 700; color: #222; margin-bottom: 4px; line-height: 1.25; }
         .product-type { font-size: 10px; color: #666; background: #eee; padding: 2px 8px; border-radius: 10px; }
-        
+
         .stock-control { display: flex; align-items: center; gap: 6px; }
         .stock-number { font-size: 20px; font-weight: bold; min-width: 35px; text-align: center; }
         .stock-number.low { color: #dc2626; }
         .stock-number.normal { color: #16a34a; }
         .qty-input { width: 52px; padding: 6px 4px; border: 2px solid #fcd34d; border-radius: 10px; font-size: 16px; text-align: center; }
         .btn-icon { width: 32px; height: 32px; border-radius: 50%; border: none; font-size: 16px; font-weight: bold; cursor: pointer; }
- 
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
         .modal-overlay.open { display: flex; }
-        .modal-box { background: white; border-radius: 20px; padding: 20px; width: 100%; max-width: 420px; max-height: 80vh; overflow-y: auto; }
-        .bill-row { background: #fff5e6; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #fcd34d; }
-        .modal-box input[type="text"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #fcd34d; border-radius: 12px; font-size: 16px; }
+        .modal-box { background: white; border-radius: 20px; padding: 20px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; }
+        .modal-box input[type="text"], .modal-box input[type="password"], .modal-box input[type="url"] { width: 100%; padding: 12px; margin: 6px 0; border: 2px solid #fcd34d; border-radius: 12px; font-size: 16px; }
         .modal-box select { font-size: 16px; }
+        .modal-box label.lbl { display: block; font-size: 12px; font-weight: bold; color: #555; margin-top: 10px; }
         .modal-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
+
+        .bill-row { background: #fff5e6; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #fcd34d; }
+        .bill-row.new { background: #eff6ff; border-color: #93c5fd; }
+        .bill-row.check { background: #fefce8; border-color: #facc15; }
+        .bill-row select { width: 100%; padding: 8px; margin: 6px 0; }
+        .bill-row .mini { width: 100%; padding: 8px; margin: 3px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        .badge { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+        .badge.ok { background: #dcfce7; color: #166534; }
+        .badge.check { background: #fef9c3; color: #854d0e; }
+        .badge.new { background: #dbeafe; color: #1e40af; }
+
+        #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #222; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 14px; z-index: 2000; display: none; max-width: 90%; text-align: center; }
     </style>
 </head>
 <body>
- 
+
     <div id="authScreen">
         <div class="auth-card">
             <h2>💡 Hiten Auto</h2>
@@ -72,10 +91,10 @@
                 <input type="password" class="auth-input" id="authPasswordConfirm" placeholder="Confirm Password">
             </div>
             <button class="auth-btn" onclick="handleAuthSubmit()">Unlock Shop</button>
-            <div class="reset-link" onclick="resetAllData()">Reset App & Reload Items</div>
+            <div class="reset-link" onclick="resetAllData()">Reset App on this phone</div>
         </div>
     </div>
- 
+
     <div id="appScreen">
         <div class="container">
             <div class="header">
@@ -83,45 +102,71 @@
                 <h1>Hiten Auto Mobile</h1>
                 <p style="font-size:12px; opacity:0.8;">Digital Stock Register</p>
             </div>
- 
+
             <div class="stats">
                 <div class="stat-card"><div class="stat-number" id="totalItems">0</div><div style="font-size:11px">Total</div></div>
                 <div class="stat-card"><div class="stat-number" id="lowStockCount">0</div><div style="font-size:11px">Low</div></div>
                 <div class="stat-card"><div class="stat-number" id="companyCount">0</div><div style="font-size:11px">Brands</div></div>
             </div>
- 
-            
- 
+
+            <div class="bill-section">
+                <div style="font-weight:bold; font-size:16px;">📷 Scan Bill</div>
+                <div class="bill-btn-row">
+                    <button class="bill-btn" id="btnPurchase" onclick="triggerBillScan('add')">🛒 Purchase Bill<br><span style="font-size:11px; font-weight:normal;">adds stock</span></button>
+                    <button class="bill-btn" id="btnSale" onclick="triggerBillScan('sub')">🧾 Sale Bill<br><span style="font-size:11px; font-weight:normal;">reduces stock</span></button>
+                </div>
+                <div class="src-row">
+                    <button class="src-btn" id="srcCam" onclick="setSource('cam')">📷 Take photo</button>
+                    <button class="src-btn" id="srcFile" onclick="setSource('file')">🖼 Gallery / PDF</button>
+                </div>
+                <div class="bill-status" id="billStatus"></div>
+                <button class="bill-btn" id="btnCancelScan" style="display:none; flex:none; margin-top:8px; padding:8px 18px; font-size:13px;" onclick="cancelScan()">✖ Cancel</button>
+                <input type="file" id="billCamInput" accept="image/*" capture="environment" style="display:none" onchange="handleBillFileSelected(event)">
+                <input type="file" id="billFileInput" accept="image/*,application/pdf" multiple style="display:none" onchange="handleBillFileSelected(event)">
+            </div>
+
+            <div class="sync-row">
+                <span id="syncStatus"></span>
+                <button class="sync-btn" onclick="refreshFromSheet(true)">🔄 Refresh</button>
+                <button class="sync-btn" onclick="openSetupModal()">⚙️ Setup</button>
+            </div>
+
             <div class="controls-row">
                 <input type="text" class="search-box" id="searchInput" placeholder="Search product...">
                 <button class="add-product-btn" onclick="openAddProductModal()">➕ Item</button>
             </div>
- 
+
             <div class="category-tabs" id="companyTabs"></div>
             <div id="productsGrid"></div>
         </div>
     </div>
- 
+
     <!-- MODALS -->
-    <div class="modal-overlay" id="apiKeyModal">
+    <div class="modal-overlay" id="setupModal">
         <div class="modal-box">
-            <h3>AI Key Setup</h3>
-            <input type="password" id="apiKeyInput" style="width:100%; padding:10px; margin:10px 0;" placeholder="Paste Key Here">
-            <button class="modal-btn" style="background:#c2410c; color:#fff;" onclick="saveApiKey()">Save Key</button>
-            <button class="modal-btn" onclick="closeApiKeyModal()">Cancel</button>
+            <h3>⚙️ Setup</h3>
+            <label class="lbl">Google Sheet web app URL (ends with /exec)</label>
+            <input type="url" id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+            <label class="lbl">Gemini API key (for bill scanning)</label>
+            <input type="password" id="geminiKeyInput" placeholder="Paste key here">
+            <label class="lbl">Gemini model (leave as is unless scanning stops working)</label>
+            <input type="text" id="geminiModelInput" placeholder="gemini-3.6-flash">
+            <button class="modal-btn" style="background:#c2410c; color:#fff;" onclick="saveSetup()">Save & Connect</button>
+            <button class="modal-btn" style="background:#fde68a;" onclick="seedSheet()">Upload this phone's list to an EMPTY sheet</button>
+            <button class="modal-btn" onclick="closeSetupModal()">Cancel</button>
         </div>
     </div>
- 
+
     <div class="modal-overlay" id="billReviewModal">
         <div class="modal-box">
-            <h3>Confirm Scanned Items</h3>
-            <p style="font-size:12px; margin-bottom:10px; color:#666;">Check matches before updating stock:</p>
+            <h3 id="billReviewTitle">Confirm Scanned Items</h3>
+            <p style="font-size:12px; margin-bottom:10px; color:#666;">Check matches before updating stock. Blue = new item (will be added to the sheet).</p>
             <div id="billReviewList"></div>
             <button class="modal-btn" style="background:#16a34a; color:#fff;" onclick="confirmBillReview()">Update Stock Now</button>
             <button class="modal-btn" onclick="closeBillReview()">Cancel</button>
         </div>
     </div>
- 
+
     <div class="modal-overlay" id="addProductModal">
         <div class="modal-box">
             <h3>Add New Product</h3>
@@ -143,9 +188,11 @@
             <button class="modal-btn" onclick="closeAddProductModal()">Cancel</button>
         </div>
     </div>
- 
+
+    <div id="toast"></div>
+
     <script>
-        // MASTER DATA (from stock.pdf price list: 318 items, prices in ₹; stock starts at 0)
+        // MASTER DATA (starting list; once a Google Sheet is connected, the sheet is the master copy)
         const STOCK_VERSION = 'pdf-2026-09';
         const INITIAL_STOCK = [
             {"id": 1001, "product": "Santro old F/Rh", "company": "Hyundai", "type": "Power Window Switch", "stock": 0, "lowThreshold": 2},
@@ -467,12 +514,29 @@
             {"id": 1317, "product": "ECO SPORTS", "company": "Fan Motor", "type": "Fan Motor", "stock": 0, "lowThreshold": 2},
             {"id": 1318, "product": "XING", "company": "IOC Value", "type": "IOC Value", "stock": 0, "lowThreshold": 2}
         ];
- 
+        const MODEL_FALLBACKS = ['gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-lite', 'gemini-1.0-flash-lite', 'gemini-0.5-flash-lite', 'gemini-0.1-flash-lite', 'gemini-0.0-flash-lite', 'gemini-3.6', 'gemini-3.1', 'gemini-2.5', 'gemini-2.0', 'gemini-1.5', 'gemini-1.0', 'gemini-0.5', 'gemini-0.1', 'gemini-0.0', ];
+        const TYPES = ['Power Window Switch','Mirror Switch','Dicky Switch','Centre Lock','Spiral','Fuel Pump Motor','Power Window Motor','Fan Motor','IOC Value','Misc Switch'];
+
         let inventory = [];
         let selectedCompany = 'All';
         let pendingBillType = null;
         let pendingBillItems = [];
- 
+        let scanBusy = false;
+        let scanToken = 0;
+        let tabList = [];
+
+        // ---------- small helpers ----------
+        const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.display = 'block';
+            clearTimeout(toast._t); toast._t = setTimeout(() => t.style.display = 'none', 3500);
+        }
+        function setSync(msg) { document.getElementById('syncStatus').textContent = msg; }
+        const itemKey = o => (String(o.product || '') + '|' + String(o.company || 'Other')).toLowerCase().replace(/\s+/g, ' ').trim();
+
+        // ---------- login ----------
         function handleAuthSubmit() {
             const pw = document.getElementById('authPasswordInput').value;
             const saved = localStorage.getItem('shopPw');
@@ -483,16 +547,18 @@
             } else if (pw === saved) { showApp(); }
             else { alert("Wrong password!"); }
         }
- 
+
         function showApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'block';
             loadData();
             updateDisplay();
+            paintSource();
+            if (sheetUrl()) refreshFromSheet(false);
+            else setSync('Saved on this phone only – tap ⚙️ Setup to connect your Google Sheet');
         }
- 
+
         function loadData() {
-            // If the saved list is from an older stock version, replace it with the new list
             if (localStorage.getItem('stockVersion') !== STOCK_VERSION) {
                 localStorage.removeItem('inventory');
                 localStorage.setItem('stockVersion', STOCK_VERSION);
@@ -500,31 +566,163 @@
             const saved = localStorage.getItem('inventory');
             inventory = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(INITIAL_STOCK));
         }
- 
+
         function saveData() { localStorage.setItem('inventory', JSON.stringify(inventory)); }
-        function resetAllData() { if(confirm("This will load the full product list. Continue?")) { localStorage.clear(); location.reload(); }}
- 
+
+        function resetAllData() {
+            if (!confirm("Reset the app on this phone? (Your Google Sheet is not changed)")) return;
+            const keep = {};
+            ['sheetUrl','geminiKey','geminiModel'].forEach(k => { const v = localStorage.getItem(k); if (v) keep[k] = v; });
+            localStorage.clear();
+            Object.keys(keep).forEach(k => localStorage.setItem(k, keep[k]));
+            location.reload();
+        }
+
+        // ---------- Google Sheet sync ----------
+        let pendingOps = JSON.parse(localStorage.getItem('pendingOps') || '[]');
+        let flushing = false;
+        let sheetEmpty = false;
+        const sheetUrl = () => (localStorage.getItem('sheetUrl') || '').trim();
+        const savePending = () => localStorage.setItem('pendingOps', JSON.stringify(pendingOps));
+
+        async function fetchJson(url, opts, ms, holder) {
+            const ctl = new AbortController();
+            if (holder) holder.ctl = ctl;
+            const timer = setTimeout(() => ctl.abort(), ms);
+            try {
+                const r = await fetch(url, { ...opts, signal: ctl.signal });
+                const txt = await r.text();
+                try { return JSON.parse(txt); }
+                catch (e) { const err = new Error('NOT_JSON'); err.notJson = true; err.status = r.status; err.body = txt.slice(0, 200); throw err; }
+            } catch (e) {
+                if (e.name === 'AbortError') throw new Error('Timed out – no reply. Check internet.');
+                throw e;
+            } finally { clearTimeout(timer); }
+        }
+        function sheetError(e) {
+            if (e.notJson) return 'Sheet link did not return data. In Apps Script: Deploy → Manage deployments → "Who has access" = Anyone, and use the URL ending in /exec.';
+            if (e instanceof TypeError) return 'Could not connect to the sheet link (check internet and that the URL is correct).';
+            return e.message || 'Sheet error';
+        }
+        async function sheetPost(payload) {
+            try {
+                const d = await fetchJson(sheetUrl(), { method: 'POST', body: JSON.stringify(payload) }, 40000);
+                if (!d.ok) throw new Error(d.error || 'Sheet error');
+                return d;
+            } catch (e) { throw new Error(sheetError(e)); }
+        }
+        async function sheetGet() {
+            try {
+                const d = await fetchJson(sheetUrl() + (sheetUrl().includes('?') ? '&' : '?') + 't=' + Date.now(), {}, 40000);
+                if (!d.ok) throw new Error(d.error || 'Sheet error');
+                return d;
+            } catch (e) { throw new Error(sheetError(e)); }
+        }
+
+        function queueOps(list) {
+            list.forEach(op => { op.opId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); pendingOps.push(op); });
+            savePending();
+            flushOps();
+        }
+
+        async function flushOps() {
+            if (!sheetUrl() || flushing || !pendingOps.length) return;
+            if (sheetEmpty) { setSync('⚠️ Your Google Sheet is empty – open ⚙️ Setup and tap Upload first (' + pendingOps.length + ' change(s) waiting)'); return; }
+            flushing = true;
+            try {
+                while (pendingOps.length) {
+                    setSync('⏳ Saving to sheet...');
+                    const batch = pendingOps.slice();
+                    const res = await sheetPost({ ops: batch });
+                    pendingOps = pendingOps.slice(batch.length);
+                    savePending();
+                    if (!pendingOps.length && res.items && res.items.length) applyRemote(res.items);
+                }
+                setSync('✅ Saved to sheet');
+            } catch (e) {
+                setSync('⚠️ Not saved to sheet yet (' + pendingOps.length + ' waiting): ' + e.message);
+            }
+            flushing = false;
+        }
+
+        function applyRemote(items) {
+            inventory = items;
+            if (selectedCompany !== 'All' && !inventory.some(i => i.company === selectedCompany)) selectedCompany = 'All';
+            saveData();
+            updateDisplay();
+        }
+
+        async function refreshFromSheet(manual) {
+            if (!sheetUrl()) { setSync('Saved on this phone only'); if (manual) openSetupModal(); return; }
+            setSync('🔄 Loading from sheet...');
+            try {
+                await flushOps();
+                if (pendingOps.length) return;
+                const d = await sheetGet();
+                if (!d.items.length) { sheetEmpty = true; setSync('Sheet is empty – open ⚙️ Setup and upload this phone\'s list'); return; }
+                sheetEmpty = false;
+                applyRemote(d.items);
+                setSync('✅ Synced with sheet');
+            } catch (e) {
+                setSync('⚠️ ' + e.message + ' (showing the copy saved on this phone)');
+            }
+        }
+
+        // ---------- setup ----------
+        function openSetupModal() {
+            document.getElementById('sheetUrlInput').value = localStorage.getItem('sheetUrl') || '';
+            document.getElementById('geminiKeyInput').value = localStorage.getItem('geminiKey') || '';
+            document.getElementById('geminiModelInput').value = localStorage.getItem('geminiModel') || '';
+            document.getElementById('setupModal').classList.add('open');
+        }
+        function closeSetupModal() { document.getElementById('setupModal').classList.remove('open'); }
+        function saveSetup() {
+            localStorage.setItem('sheetUrl', document.getElementById('sheetUrlInput').value.trim());
+            localStorage.setItem('geminiKey', document.getElementById('geminiKeyInput').value.trim());
+            localStorage.setItem('geminiModel', document.getElementById('geminiModelInput').value.trim());
+            closeSetupModal();
+            toast('Saved');
+            refreshFromSheet(false);
+        }
+        async function seedSheet() {
+            const url = document.getElementById('sheetUrlInput').value.trim();
+            if (!url) return alert('Paste the Sheet web app URL first.');
+            localStorage.setItem('sheetUrl', url);
+            try {
+                setSync('⏳ Uploading list to sheet...');
+                const d = await sheetPost({ ops: [{ type: 'seed', items: inventory }] });
+                sheetEmpty = false;
+                pendingOps = []; savePending();   // the uploaded list already includes these changes
+                applyRemote(d.items);
+                closeSetupModal();
+                setSync('✅ Uploaded ' + d.items.length + ' items to the sheet');
+            } catch (e) { alert(e.message); setSync('⚠️ Upload failed'); }
+        }
+
+        // ---------- stock screen ----------
         function updateDisplay() {
             document.getElementById('totalItems').textContent = inventory.reduce((s, i) => s + i.stock, 0);
             document.getElementById('lowStockCount').textContent = inventory.filter(i => i.stock < i.lowThreshold).length;
             document.getElementById('companyCount').textContent = [...new Set(inventory.map(i => i.company))].length;
             renderGrid();
         }
- 
+
+        function selectTab(idx) { selectedCompany = tabList[idx]; renderGrid(); }
+
         function renderGrid() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filtered = inventory.filter(i => (selectedCompany === 'All' || i.company === selectedCompany) && (i.product.toLowerCase().includes(search) || i.company.toLowerCase().includes(search) || i.type.toLowerCase().includes(search)));
-            const tabs = ['All', ...new Set(inventory.map(i => i.company))];
-            document.getElementById('companyTabs').innerHTML = tabs.map(t => `<div class="category-tab ${t === selectedCompany ? 'active' : ''}" onclick="selectedCompany='${t}'; renderGrid()">${t}</div>`).join('');
- 
+            tabList = ['All', ...new Set(inventory.map(i => i.company))];
+            document.getElementById('companyTabs').innerHTML = tabList.map((t, idx) => `<div class="category-tab ${t === selectedCompany ? 'active' : ''}" onclick="selectTab(${idx})">${esc(t)}</div>`).join('');
+
             const groups = {};
             filtered.forEach(i => { if (!groups[i.company]) groups[i.company] = []; groups[i.company].push(i); });
             let html = '';
             for (let comp in groups) {
-                html += `<div class="company-group"><div class="company-name">${comp}</div>`;
+                html += `<div class="company-group"><div class="company-name">${esc(comp)}</div>`;
                 groups[comp].forEach(item => {
                     html += `<div class="product-card">
-                        <div><div class="product-name">${item.product}</div><span class="product-type">${item.type}</span></div>
+                        <div><div class="product-name">${esc(item.product)}</div><span class="product-type">${esc(item.type)}</span></div>
                         <div class="stock-control">
                             <span class="stock-number ${item.stock < item.lowThreshold ? 'low' : 'normal'}">${item.stock}</span>
                             <input type="number" inputmode="numeric" min="1" class="qty-input" id="qty-${item.id}" placeholder="1">
@@ -537,98 +735,323 @@
             }
             document.getElementById('productsGrid').innerHTML = html || '<p style="text-align:center; padding:20px;">No items.</p>';
         }
- 
+
+        // change stock locally + queue the change for the sheet; returns the real change made
+        function applyDelta(item, delta) {
+            const ns = Math.max(0, item.stock + delta);
+            const eff = ns - item.stock;
+            item.stock = ns;
+            return eff ? { type: 'adjust', id: item.id, key: itemKey(item), delta: eff } : null;
+        }
+
         function adj(id, sign) {
-            const i = inventory.find(x => x.id === id);
-            if (!i) return;
+            const item = inventory.find(x => x.id === id);
+            if (!item) return;
             const box = document.getElementById('qty-' + id);
-            const n = Math.abs(parseInt(box && box.value)) || 1;   // empty = 1
-            i.stock = Math.max(0, i.stock + sign * n);
+            const n = Math.abs(parseInt(box && box.value)) || 1;   // empty box = 1
+            const op = applyDelta(item, sign * n);
             saveData(); updateDisplay();
+            if (op) queueOps([op]);
         }
- 
-        // --- AI SCANNING ---
-        function triggerBillScan(type) { 
-            if (!localStorage.getItem('geminiKey')) return alert("Please click 'Edit AI Key' first and paste your Google key!");
-            pendingBillType = type; 
-            document.getElementById('billFileInput').click(); 
+
+        // ---------- matching engine ----------
+        const STOP = new Set(['power','window','switch','sw','pcs','pc','nos','no','set','the','for','and','of','rs','qty']);
+        function normTokens(str) {
+            let s = ' ' + String(str || '').toLowerCase() + ' ';
+            s = s.replace(/\bfr\s*[\/.]?\s*rh\b/g, ' frh ')
+                 .replace(/\bf\s*[\/.]?\s*r\s*[\/.]?\s*h\b/g, ' frh ')
+                 .replace(/\bfr?\s*[\/.]?\s*l\s*[\/.]?\s*h\b/g, ' flh ')
+                 .replace(/\br\s*[\/.]\s*h\b/g, ' rh ')
+                 .replace(/\bl\s*[\/.]\s*h\b/g, ' lh ')
+                 .replace(/\bt\s*\.?\s*(\d)/g, ' t$1')
+                 .replace(/(\d)\s*pin\b/g, '$1pin')
+                 .replace(/(\d)\s*(?:door|dr)\b/g, '$1d')
+                 .replace(/[^a-z0-9]+/g, ' ');
+            return s.trim().split(' ').filter(t => t && !STOP.has(t));
         }
- 
+        function tokHit(a, b) {
+            if (a === b) return 1;
+            if ((a === 'rh' && b === 'frh') || (a === 'frh' && b === 'rh') || (a === 'lh' && b === 'flh') || (a === 'flh' && b === 'lh')) return 0.7;
+            if (a.length >= 4 && b.length >= 4 && (a.startsWith(b) || b.startsWith(a))) return 0.7;
+            return 0;
+        }
+        function detectType(name) {
+            const n = String(name).toLowerCase();
+            if (/spiral/.test(n)) return 'Spiral';
+            if (/fuel/.test(n)) return 'Fuel Pump Motor';
+            if (/(window|pw)\s*motor/.test(n)) return 'Power Window Motor';
+            if (/\bfan\b/.test(n)) return 'Fan Motor';
+            if (/dick?e?y|trunk|boot/.test(n)) return 'Dicky Switch';
+            if (/(centre|center)\s*lock/.test(n)) return 'Centre Lock';
+            if (/mirror/.test(n)) return 'Mirror Switch';
+            if (/\bioc\b/.test(n)) return 'IOC Value';
+            return '';
+        }
+        const tokCache = new Map();
+        function itemTokens(item) {
+            if (!tokCache.has(item.product)) tokCache.set(item.product, normTokens(item.product));
+            return tokCache.get(item.product);
+        }
+        function findMatches(name) {
+            const A = normTokens(name);
+            const hint = detectType(name);
+            if (!A.length) return [];
+            const scored = inventory.map(item => {
+                const B = itemTokens(item);
+                if (!B.length) return { item, score: 0 };
+                let hits = 0;
+                A.forEach(a => { let best = 0; B.forEach(b => { const h = tokHit(a, b); if (h > best) best = h; }); hits += best; });
+                let score = 2 * hits / (A.length + B.length);
+                if (hint) score += (item.type === hint) ? 0.12 : -0.1;
+                return { item, score };
+            });
+            return scored.filter(x => x.score > 0.15).sort((a, b) => b.score - a.score).slice(0, 6);
+        }
+        function guessCompany(name) {
+            const A = new Set(normTokens(name));
+            const c = [...new Set(inventory.map(i => i.company))].find(co => normTokens(co).some(t => A.has(t)));
+            return c || 'Other';
+        }
+
+        // ---------- bill scanning ----------
+        let billSource = localStorage.getItem('billSource') || 'cam';
+        function paintSource() {
+            document.getElementById('srcCam').classList.toggle('active', billSource === 'cam');
+            document.getElementById('srcFile').classList.toggle('active', billSource === 'file');
+        }
+        function setSource(s) { billSource = s; localStorage.setItem('billSource', s); paintSource(); }
+
+        function triggerBillScan(type) {
+            if (scanBusy) return;
+            if (!localStorage.getItem('geminiKey')) { alert("First paste your Gemini key in ⚙️ Setup."); openSetupModal(); return; }
+            pendingBillType = type;
+            document.getElementById(billSource === 'cam' ? 'billCamInput' : 'billFileInput').click();
+        }
+
+        function setBillButtons(on) {
+            document.getElementById('btnPurchase').disabled = !on;
+            document.getElementById('btnSale').disabled = !on;
+        }
+
+        function fileToBase64(file) {
+            return new Promise((res, rej) => {
+                const r = new FileReader();
+                r.onload = () => res(r.result.split(',')[1]);
+                r.onerror = () => rej(new Error('Could not read file'));
+                r.readAsDataURL(file);
+            });
+        }
+
+        // shrink big phone photos so the upload is fast (PDFs are sent as they are)
+        async function prepareFile(file) {
+            if (file.type === 'application/pdf') return { mime: 'application/pdf', data: await fileToBase64(file) };
+            try {
+                const url = URL.createObjectURL(file);
+                const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
+                const max = 1800, sc = Math.min(1, max / Math.max(img.width, img.height));
+                const cv = document.createElement('canvas');
+                cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+                cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                URL.revokeObjectURL(url);
+                return { mime: 'image/jpeg', data: cv.toDataURL('image/jpeg', 0.85).split(',')[1] };
+            } catch (e) {
+                return { mime: file.type || 'image/jpeg', data: await fileToBase64(file) };
+            }
+        }
+
+        const BILL_PROMPT = 'This is a photo or scan of a shop bill/invoice from an auto-parts shop. It may be dot-matrix, a carbon copy or handwritten. ' +
+            'Extract ONLY the product line items: the item name/description exactly as written (keep model names, F/Rh, L/h, pin counts, T.3 etc.) and the quantity (a whole number; use 1 if no quantity is shown). ' +
+            'Read handwriting carefully; if a word is unclear give your best guess. ' +
+            'Ignore prices, amounts, totals, GST/tax, party names, addresses, dates and bill numbers. ' +
+            'Return ONLY a JSON array like [{"name":"Swift F/Rh","qty":2}]. If there are no items return [].';
+
+        function parseItems(txt) {
+            let t = String(txt).replace(/```json|```/g, '').trim();
+            const a = t.indexOf('['), b = t.lastIndexOf(']');
+            if (a >= 0 && b > a) t = t.slice(a, b + 1);
+            let arr = JSON.parse(t);
+            if (arr && !Array.isArray(arr) && Array.isArray(arr.items)) arr = arr.items;
+            if (!Array.isArray(arr)) throw new SyntaxError('Not a list');
+            return arr.map(x => ({ name: String(x.name || x.item || '').trim(), qty: Math.max(1, parseInt(x.qty || x.quantity) || 1) })).filter(x => x.name);
+        }
+
+        let scanCtl = { ctl: null };
+        let scanLabel = '';
+        let scanBase = '', scanStart = 0, scanTimer = null;
+        function paintStatus() {
+            const s = (scanBase && scanStart) ? ' [' + Math.round((Date.now() - scanStart) / 1000) + 's]' : '';
+            document.getElementById('billStatus').textContent = scanBase + s;
+        }
+        const setBillStatus = t => { scanBase = t; paintStatus(); };
+        function stopScanTimer() { clearInterval(scanTimer); scanStart = 0; scanBase = ''; }
+
+        async function askGemini(mime, data, token) {
+            const key = localStorage.getItem('geminiKey');
+            const chosen = (localStorage.getItem('geminiModel') || '').trim();
+            const models = [chosen, ...MODEL_FALLBACKS].filter((m, i, a) => m && a.indexOf(m) === i);
+            let lastErr = new Error('AI failed');
+            const started = Date.now();
+            for (const model of models) {
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    if (token !== scanToken) throw new Error('cancelled');
+                    if (Date.now() - started > 60000) throw new Error('Taking too long. Last problem: ' + lastErr.message);
+                    setBillStatus(`${scanLabel} (${model}${attempt ? ', retry' : ''})` + (lastErr.message !== 'AI failed' ? ' – last problem: ' + lastErr.message.slice(0, 80) : ''));
+                    try {
+                        const j = await fetchJson(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ inline_data: { mime_type: mime, data } }, { text: BILL_PROMPT }] }],
+                                generationConfig: { temperature: 0, responseMimeType: 'application/json' }
+                            })
+                        }, 30000, scanCtl);
+                        if (j.error) {
+                            const msg = j.error.message || 'AI error';
+                            lastErr = new Error(model + ': ' + msg);
+                            if (j.error.code === 404 || (j.error.code === 400 && /model/i.test(msg) && !/key/i.test(msg))) break;   // try next model
+                            if (j.error.code === 429) break;                                                                          // limit reached on this model: go to the next one straight away
+                            if (j.error.code === 503) { await sleep(2000); continue; }                                                 // busy: retry once
+                            throw Object.assign(lastErr, { fatal: true });
+                        }
+                        const txt = ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).map(p => p.text || '').join('');
+                        return parseItems(txt);
+                    } catch (err) {
+                        if (token !== scanToken) throw new Error('cancelled');
+                        if (err.fatal) throw err;
+                        lastErr = err.notJson ? new Error(model + ': AI sent an unreadable reply') : (err instanceof TypeError ? new Error('No internet / request blocked') : err);
+                        await sleep(800);
+                    }
+                }
+            }
+            throw lastErr;
+        }
+
+        function cancelScan() {
+            scanToken++;
+            if (scanCtl.ctl) scanCtl.ctl.abort();
+            scanBusy = false; setBillButtons(true); stopScanTimer(); setBillStatus('');
+            document.getElementById('btnCancelScan').style.display = 'none';
+        }
+
         async function handleBillFileSelected(e) {
-            const files = e.target.files;
+            const files = [...e.target.files];
+            e.target.value = '';
             if (!files.length) return;
-            const status = document.getElementById('billStatus');
-            let results = [];
-            
-            for (let file of files) {
-                status.textContent = "AI is reading: " + file.name + "...";
-                try {
-                    const reader = new FileReader();
-                    const base64Promise = new Promise(r => { reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(file); });
-                    const base64 = await base64Promise;
-                    
-                    const key = localStorage.getItem('geminiKey');
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-lite:generateContent?key=${key}`;
-                    
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }, { text: "List items from this bill as a JSON array ONLY: [{\"name\":\"ItemName\",\"qty\":1}]. Do not explain." }] }] })
-                    });
-                    
-                    const data = await res.json();
-                    if (data.error) throw new Error(data.error.message);
-                    
-                    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-                    results = results.concat(JSON.parse(text));
-                } catch (err) { alert("Error reading " + file.name + ": " + err.message); }
+            const type = pendingBillType;
+            const myToken = ++scanToken;
+            scanBusy = true; setBillButtons(false);
+            scanStart = Date.now(); clearInterval(scanTimer); scanTimer = setInterval(paintStatus, 1000);
+            document.getElementById('btnCancelScan').style.display = 'inline-block';
+            let results = [], failed = false;
+            try {
+                for (let k = 0; k < files.length; k++) {
+                    scanLabel = `AI is reading bill ${k + 1} of ${files.length}...`;
+                    setBillStatus(scanLabel);
+                    const f = await prepareFile(files[k]);
+                    if (myToken !== scanToken) return;
+                    const items = await askGemini(f.mime, f.data, myToken);
+                    if (myToken !== scanToken) return;
+                    results = results.concat(items);
+                }
+            } catch (err) {
+                if (myToken !== scanToken) return;   // cancelled
+                failed = true;
+                alert('Could not read the bill:\n' + err.message);
+            } finally {
+                if (myToken === scanToken) {
+                    scanBusy = false; setBillButtons(true); stopScanTimer(); setBillStatus('');
+                    document.getElementById('btnCancelScan').style.display = 'none';
+                }
             }
-            
-            if (results.length) {
-                pendingBillItems = results.map(r => ({ ...r, matchedId: autoMatch(r.name), included: true }));
-                openBillReview();
-            }
-            status.textContent = "";
+            if (myToken !== scanToken) return;
+            if (results.length) openBillReview(type, results);
+            else if (!failed) toast('No items found on that bill');
         }
- 
-        function autoMatch(name) {
-            const n = name.toLowerCase();
-            const match = inventory.find(i => n.includes(i.product.toLowerCase().split(' ')[0]) || i.product.toLowerCase().includes(n.split(' ')[0]));
-            return match ? match.id : null;
+
+        function openBillReview(type, results) {
+            pendingBillType = type;
+            pendingBillItems = results.map(r => {
+                const m = findMatches(r.name);
+                const best = m[0], second = m[1];
+                let status = 'new', matchedId = 'new';
+                if (best && best.score >= 0.4) {
+                    matchedId = best.item.id;
+                    status = (best.score >= 0.6 && !(second && best.score - second.score < 0.03 && best.score < 0.85)) ? 'ok' : 'check';
+                }
+                return { name: r.name, qty: r.qty, included: true, matchedId, status, cands: m,
+                         newName: r.name, newCompany: guessCompany(r.name), newType: detectType(r.name) || 'Power Window Switch' };
+            });
+            renderBillReview();
+            document.getElementById('billReviewTitle').textContent = type === 'add' ? '🛒 Purchase Bill – stock will go UP' : '🧾 Sale Bill – stock will go DOWN';
+            document.getElementById('billReviewModal').classList.add('open');
         }
- 
-        function openBillReview() {
+
+        function renderBillReview() {
+            const allOpts = [...inventory].sort((a, b) => (a.company + a.product).localeCompare(b.company + b.product))
+                .map(inv => `<option value="${inv.id}">${esc(inv.company)} - ${esc(inv.product)}</option>`).join('');
             let html = '';
-            pendingBillItems.forEach((item, i) => {
-                html += `<div class="bill-row">
-                    <input type="checkbox" checked onchange="pendingBillItems[${i}].included=this.checked"> <b>${item.name}</b>
-                    <select style="width:100%; margin:5px 0;" onchange="pendingBillItems[${i}].matchedId=parseInt(this.value)">
-                        <option value="">-- Manual Select --</option>
-                        ${inventory.map(inv => `<option value="${inv.id}" ${inv.id === item.matchedId ? 'selected' : ''}>${inv.company} - ${inv.product}</option>`).join('')}
+            pendingBillItems.forEach((it, i) => {
+                const badge = it.status === 'ok' ? '<span class="badge ok">✅ match</span>' : it.status === 'check' ? '<span class="badge check">⚠️ check</span>' : '<span class="badge new">🆕 new</span>';
+                const top = it.cands.map(c => `<option value="${c.item.id}" ${c.item.id === it.matchedId ? 'selected' : ''}>${esc(c.item.company)} - ${esc(c.item.product)}</option>`).join('');
+                html += `<div class="bill-row ${it.status === 'ok' ? '' : it.status}" id="brow-${i}">
+                    <label><input type="checkbox" ${it.included ? 'checked' : ''} onchange="pendingBillItems[${i}].included=this.checked"> <b>${esc(it.name)}</b></label>${badge}
+                    <select onchange="onMatchChange(${i}, this.value)">
+                        <option value="new" ${it.matchedId === 'new' ? 'selected' : ''}>➕ Add as NEW item</option>
+                        ${top ? `<optgroup label="Best matches">${top}</optgroup>` : ''}
+                        <optgroup label="All items">${allOpts}</optgroup>
                     </select>
-                    Qty: <input type="number" value="${item.qty}" style="width:50px" onchange="pendingBillItems[${i}].qty=parseInt(this.value)">
+                    <div id="newf-${i}" style="display:${it.matchedId === 'new' ? 'block' : 'none'}">
+                        <input class="mini" type="text" value="${esc(it.newName)}" placeholder="Item name" oninput="pendingBillItems[${i}].newName=this.value">
+                        <input class="mini" type="text" value="${esc(it.newCompany)}" placeholder="Brand" oninput="pendingBillItems[${i}].newCompany=this.value">
+                        <select class="mini" onchange="pendingBillItems[${i}].newType=this.value">${TYPES.map(t => `<option ${t === it.newType ? 'selected' : ''}>${t}</option>`).join('')}</select>
+                    </div>
+                    Qty: <input type="number" inputmode="numeric" value="${it.qty}" style="width:60px; padding:6px;" onchange="pendingBillItems[${i}].qty=parseInt(this.value)||1">
                 </div>`;
             });
             document.getElementById('billReviewList').innerHTML = html;
-            document.getElementById('billReviewModal').classList.add('open');
         }
- 
+
+        function onMatchChange(i, v) {
+            pendingBillItems[i].matchedId = v === 'new' ? 'new' : parseInt(v);
+            document.getElementById('newf-' + i).style.display = v === 'new' ? 'block' : 'none';
+        }
+
         function confirmBillReview() {
+            const sign = pendingBillType === 'add' ? 1 : -1;
+            const ops = [];
+            let updated = 0, added = 0;
             pendingBillItems.forEach(row => {
-                if (row.included && row.matchedId) {
-                    const item = inventory.find(i => i.id === row.matchedId);
-                    const change = pendingBillType === 'add' ? row.qty : -row.qty;
-                    item.stock = Math.max(0, item.stock + change);
+                if (!row.included) return;
+                const qty = Math.max(1, parseInt(row.qty) || 1);
+                let item = null;
+                if (row.matchedId === 'new') {
+                    const name = (row.newName || row.name).trim();
+                    const company = (row.newCompany || '').trim() || 'Other';
+                    item = inventory.find(x => itemKey(x) === itemKey({ product: name, company }));
+                    if (!item) {
+                        const start = sign > 0 ? qty : 0;   // a new item on a sale bill starts at 0
+                        const n = { id: Date.now() + added, product: name, company, type: row.newType, stock: start, lowThreshold: 2 };
+                        inventory.unshift(n);
+                        ops.push({ type: 'add', id: n.id, product: name, company, itemType: row.newType, stock: start, lowThreshold: 2 });
+                        added++;
+                        return;
+                    }
+                } else {
+                    item = inventory.find(x => x.id === row.matchedId);
+                }
+                if (item) {
+                    const op = applyDelta(item, sign * qty);
+                    if (op) ops.push(op);
+                    updated++;
                 }
             });
             saveData(); updateDisplay(); closeBillReview();
-            alert("Stock Updated Successfully!");
+            if (ops.length) queueOps(ops);
+            toast(`Updated ${updated} item${updated === 1 ? '' : 's'}` + (added ? `, added ${added} new` : ''));
+            pendingBillType = null; pendingBillItems = [];
         }
- 
-        // MODAL UTILS
-        function openApiKeyModal() { document.getElementById('apiKeyModal').classList.add('open'); document.getElementById('apiKeyInput').value = localStorage.getItem('geminiKey') || ''; }
-        function closeApiKeyModal() { document.getElementById('apiKeyModal').classList.remove('open'); }
-        function saveApiKey() { localStorage.setItem('geminiKey', document.getElementById('apiKeyInput').value); closeApiKeyModal(); alert("Key Saved!"); }
+
+        // ---------- modals ----------
         function closeBillReview() { document.getElementById('billReviewModal').classList.remove('open'); }
         function openAddProductModal() { document.getElementById('addProductModal').classList.add('open'); }
         function closeAddProductModal() { document.getElementById('addProductModal').classList.remove('open'); }
@@ -637,21 +1060,43 @@
             const comp = document.getElementById('newProdCompany').value.trim();
             const type = document.getElementById('newProdType').value;
             if (!name || !comp) { alert("Fill details!"); return; }
-            // add at the TOP so it is easy to see
-            inventory.unshift({ id: Date.now(), product: name, company: comp, type: type, stock: 0, lowThreshold: 2 });
+            const n = { id: Date.now(), product: name, company: comp, type: type, stock: 0, lowThreshold: 2 };
+            inventory.unshift(n);   // add at the TOP so it is easy to see
             saveData();
             document.getElementById('newProdName').value = '';
             document.getElementById('newProdCompany').value = '';
             document.getElementById('searchInput').value = '';
-            selectedCompany = comp;   // jump to the brand tab of the new item
+            selectedCompany = comp;
             closeAddProductModal();
             updateDisplay();
             window.scrollTo(0, 0);
+            queueOps([{ type: 'add', id: n.id, product: name, company: comp, itemType: type, stock: 0, lowThreshold: 2 }]);
         }
- 
+
+        // ---------- keep several phones in step: quietly re-read the sheet ----------
+        function busyUI() {
+            if (scanBusy || flushing || pendingOps.length) return true;
+            if (document.querySelector('.modal-overlay.open')) return true;
+            const a = document.activeElement;
+            if (a && a.tagName === 'INPUT') return true;
+            return [...document.querySelectorAll('.qty-input')].some(i => i.value);
+        }
+        async function autoRefresh() {
+            if (!sheetUrl() || document.hidden || document.getElementById('appScreen').style.display !== 'block' || busyUI()) return;
+            try {
+                const d = await sheetGet();
+                if (d.items.length && !busyUI()) {
+                    sheetEmpty = false;
+                    applyRemote(d.items);
+                    setSync('✅ Synced ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                }
+            } catch (e) { /* stay quiet, try again next time */ }
+        }
+        setInterval(autoRefresh, 30000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) autoRefresh(); });
+
         window.onload = () => { if (!localStorage.getItem('shopPw')) document.getElementById('firstRunFields').style.display = 'block'; };
         document.getElementById('searchInput').oninput = renderGrid;
     </script>
 </body>
 </html>
- 
