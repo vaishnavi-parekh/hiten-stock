@@ -42,13 +42,14 @@
         .company-name { font-size: 18px; font-weight: bold; color: #c2410c; border-bottom: 2px solid #fde68a; margin-bottom: 10px; padding-bottom: 5px; }
         
         .product-card { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #fde68a; }
-        .product-name { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 2px; }
+        .product-name { font-size: 25px; font-weight: 700; color: #222; margin-bottom: 4px; line-height: 1.25; }
         .product-type { font-size: 10px; color: #666; background: #eee; padding: 2px 8px; border-radius: 10px; }
         
-        .stock-control { display: flex; align-items: center; gap: 8px; }
+        .stock-control { display: flex; align-items: center; gap: 6px; }
         .stock-number { font-size: 20px; font-weight: bold; min-width: 35px; text-align: center; }
         .stock-number.low { color: #dc2626; }
         .stock-number.normal { color: #16a34a; }
+        .qty-input { width: 52px; padding: 6px 4px; border: 2px solid #fcd34d; border-radius: 10px; font-size: 16px; text-align: center; }
         .btn-icon { width: 32px; height: 32px; border-radius: 50%; border: none; font-size: 16px; font-weight: bold; cursor: pointer; }
  
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
@@ -526,9 +527,9 @@
                         <div><div class="product-name">${item.product}</div><span class="product-type">${item.type}</span></div>
                         <div class="stock-control">
                             <span class="stock-number ${item.stock < item.lowThreshold ? 'low' : 'normal'}">${item.stock}</span>
+                            <input type="number" inputmode="numeric" min="1" class="qty-input" id="qty-${item.id}" placeholder="1">
                             <button class="btn-icon" style="background:#dcfce7" onclick="adj(${item.id}, 1)">+</button>
                             <button class="btn-icon" style="background:#fee2e2" onclick="adj(${item.id}, -1)">-</button>
-                            <button class="btn-icon" style="background:#f3f4f6; font-size:14px;" onclick="deleteItem(${item.id})" title="Delete item">🗑</button>
                         </div>
                     </div>`;
                 });
@@ -537,17 +538,14 @@
             document.getElementById('productsGrid').innerHTML = html || '<p style="text-align:center; padding:20px;">No items.</p>';
         }
  
-        function deleteItem(id) {
+        function adj(id, sign) {
             const i = inventory.find(x => x.id === id);
             if (!i) return;
-            if (!confirm('Delete "' + i.product + '" (' + i.company + ')?')) return;
-            inventory = inventory.filter(x => x.id !== id);
-            // if that brand is now empty, go back to All
-            if (selectedCompany !== 'All' && !inventory.some(x => x.company === selectedCompany)) selectedCompany = 'All';
+            const box = document.getElementById('qty-' + id);
+            const n = Math.abs(parseInt(box && box.value)) || 1;   // empty = 1
+            i.stock = Math.max(0, i.stock + sign * n);
             saveData(); updateDisplay();
         }
- 
-        function adj(id, amt) { const i = inventory.find(x => x.id === id); i.stock = Math.max(0, i.stock + amt); saveData(); updateDisplay(); }
  
         // --- AI SCANNING ---
         function triggerBillScan(type) { 
